@@ -1,9 +1,9 @@
 # Notes for AI agents (Claude Code, Codex, etc.)
 
-This is a **Chrome MV3 extension, plain JavaScript, no build step**. The folder
-`element-pointer-ext/` is what Chrome loads via "Load unpacked" — its contents
-ship as-is. Treat that folder as the source of truth and the artifact at the same
-time.
+This is **LLM Pointer**, a Chrome MV3 extension, plain JavaScript, no build step.
+The folder `llm-pointer-ext/` is what Chrome loads via "Load unpacked" — its
+contents ship as-is. Treat that folder as the source of truth and the artifact
+at the same time.
 
 ## Architecture in one paragraph
 
@@ -13,7 +13,7 @@ tab using `chrome.scripting.executeScript({ files: ["content.js"], world: "MAIN"
 Everything else — the bottom bar, the element highlighter, the four-piece dim
 overlay, the React fiber walker, the selector builder, the clipboard copy, the
 mic recorder, the Deepgram call, the merge-transcript logic — lives in
-`content.js` as a single IIFE that toggles `window.__elementPointerActive` so a
+`content.js` as a single IIFE that toggles `window.__llmPointerActive` so a
 second toolbar click tears down the previous instance.
 
 ## Constraints — do not casually break these
@@ -28,10 +28,10 @@ second toolbar click tears down the previous instance.
   nodes (`__reactFiber$…` keys are only on the page's React, not the extension's).
   Keep it that way; do not move logic into the isolated world.
 - **Single IIFE, idempotent toggle.** The script must remain safe to inject
-  twice. The `window.__elementPointerActive` / `__elementPointerTeardown` pattern
+  twice. The `window.__llmPointerActive` / `__llmPointerTeardown` pattern
   at the top is load-bearing — when the user clicks the icon a second time, the
   previous run tears itself down before the new one starts.
-- **All UI elements use the `__ep-` class prefix** and are filtered out by
+- **All UI elements use the `__lp-` class prefix** and are filtered out by
   `isOurs(el)`. Any new DOM you add to the page must follow the same convention,
   or hover/click handlers will treat the extension's own UI as page content.
 - **All UI must call `blockEvents(el)`** (defined in `content.js`). Page modals
@@ -44,7 +44,7 @@ second toolbar click tears down the previous instance.
 
 ## How to test changes
 
-1. Edit a file under `element-pointer-ext/`.
+1. Edit a file under `llm-pointer-ext/`.
 2. Tell the user to hit the **reload** icon on the extension's card at
    `chrome://extensions` (you cannot do this for them).
 3. Ask them to test on a page that has React (e.g. a Next.js app — that's the
@@ -60,7 +60,7 @@ literals where the existing code omits them.
 
 ## When asked to add a feature
 
-- If it's a new piece of bar UI: add a `__ep-…` element, append it to `bar` in
+- If it's a new piece of bar UI: add a `__lp-…` element, append it to `bar` in
   the right slot, call `blockEvents` if it accepts pointer events, wire its
   handler.
 - If it's a new way to describe the picked element: extend `buildElementPath`.
@@ -68,7 +68,7 @@ literals where the existing code omits them.
   whole point is that LLMs paste this directly.
 - If it's a new transcription provider: add it alongside the Deepgram block in
   `transcribe()`, keep the API key in `localStorage` under a new namespaced key
-  (current uses `ep_deepgram_key`, `ep_language`).
+  (current uses `lp_deepgram_key`, `lp_language`).
 
 ## When asked to change the manifest
 

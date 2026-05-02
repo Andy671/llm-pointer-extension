@@ -1,51 +1,51 @@
 (() => {
-  if (window.__elementPointerActive) { window.__elementPointerTeardown?.(); return; }
-  window.__elementPointerActive = true;
+  if (window.__llmPointerActive) { window.__llmPointerTeardown?.(); return; }
+  window.__llmPointerActive = true;
 
   // ======================== STYLES ========================
   const style = document.createElement("style");
-  style.id = "__ep-style";
+  style.id = "__lp-style";
   style.textContent = `
-    .__ep-tint{position:fixed;pointer-events:none;z-index:2147483640;background:rgba(0,0,0,0.45);transition:all .04s ease}
-    .__ep-hl{position:fixed;pointer-events:none;z-index:2147483641;border:2px solid #6366f1;border-radius:4px;box-shadow:0 0 0 3px rgba(99,102,241,0.3);transition:all .04s ease;display:none}
-    .__ep-lbl-wrap{position:fixed;z-index:2147483643;pointer-events:none;display:none;flex-direction:row;align-items:stretch}
-    .__ep-lbl-arrows{display:flex;background:#2a2a3a;border-radius:4px 0 0 4px;overflow:hidden;pointer-events:auto}
-    .__ep-lbl-arrows button{width:26px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
-    .__ep-lbl-arrows button:hover{background:rgba(255,255,255,0.1)}
-    .__ep-lbl-arrows button:first-child{border-right:1px solid rgba(255,255,255,0.08)}
-    .__ep-lbl-text{background:#1e1b4b;color:#e0e7ff;font:600 11px/1.3 ui-monospace,monospace;padding:4px 10px;border-radius:0 4px 4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px;display:flex;align-items:center}
-    .__ep-bar{position:fixed;bottom:0;left:0;right:0;z-index:2147483645;background:#0c0c0f;color:#e0e7ff;font:500 13px/1.4 system-ui,-apple-system,sans-serif;display:flex;align-items:center;padding:10px 16px;gap:12px;box-shadow:0 -4px 24px rgba(0,0,0,0.4);pointer-events:auto;transition:transform .15s ease}
-    .__ep-bar.minimized{transform:translateY(100%)}
-    .__ep-bar kbd{background:rgba(255,255,255,0.1);border-radius:4px;padding:2px 6px;font:600 10px ui-monospace,monospace;color:rgba(224,231,255,0.6)}
-    .__ep-bar-hint{font-size:12px;color:rgba(224,231,255,0.4);white-space:nowrap}
-    .__ep-bar-path{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:12px ui-monospace,monospace;color:rgba(224,231,255,0.6)}
-    .__ep-btn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none;padding:0}
-    .__ep-btn-rec{background:#dc2626}
-    .__ep-btn-stop{background:#2a2a3a}
-    .__ep-btn-sm{width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none;padding:0}
-    .__ep-btn-sm:hover{background:rgba(255,255,255,0.12)}
-    .__ep-timer{font:600 14px ui-monospace,monospace;color:#f87171;min-width:44px}
-    .__ep-dot{width:6px;height:6px;border-radius:50%;background:#dc2626;flex-shrink:0;animation:__ep-blink 1s step-end infinite}
-    .__ep-clicks{font:400 11px system-ui,sans-serif;color:rgba(224,231,255,0.25);white-space:nowrap}
-    .__ep-toast{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);z-index:2147483646;background:#22c55e;color:#fff;font:600 13px/1.4 system-ui,sans-serif;padding:8px 20px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.25);opacity:0;transition:opacity .2s;pointer-events:none}
-    .__ep-toast.show{opacity:1}
-    .__ep-toast.err{background:#dc2626}
-    .__ep-settings{position:fixed;bottom:58px;right:16px;z-index:2147483646;width:300px;background:#0c0c0f;border:0.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;display:none;flex-direction:column;gap:12px;pointer-events:auto;box-shadow:0 -8px 32px rgba(0,0,0,0.4)}
-    .__ep-settings label{font:400 11px system-ui,sans-serif;color:rgba(224,231,255,0.35);display:block;margin-bottom:4px}
-    .__ep-settings input,.__ep-settings select{width:100%;background:#1a1a24;border:0.5px solid rgba(255,255,255,0.1);border-radius:6px;padding:8px 10px;color:#e0e7ff;font:13px ui-monospace,monospace;outline:none;box-sizing:border-box}
-    .__ep-settings select{font-family:system-ui,-apple-system,sans-serif;cursor:pointer}
-    .__ep-settings input:focus,.__ep-settings select:focus{border-color:rgba(99,102,241,0.5)}
-    .__ep-settings input::placeholder{color:rgba(224,231,255,0.2)}
-    .__ep-mini{position:fixed;bottom:12px;right:16px;z-index:2147483645;width:36px;height:36px;border-radius:8px;background:#0c0c0f;border:0.5px solid rgba(255,255,255,0.1);display:none;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
-    .__ep-mini:hover{background:#1a1a24}
-    .__ep-spin{animation:__ep-spin .8s linear infinite}
-    @keyframes __ep-blink{50%{opacity:0}}
-    @keyframes __ep-spin{to{transform:rotate(360deg)}}
+    .__lp-tint{position:fixed;pointer-events:none;z-index:2147483640;background:rgba(0,0,0,0.45);transition:all .04s ease}
+    .__lp-hl{position:fixed;pointer-events:none;z-index:2147483641;border:2px solid #6366f1;border-radius:4px;box-shadow:0 0 0 3px rgba(99,102,241,0.3);transition:all .04s ease;display:none}
+    .__lp-lbl-wrap{position:fixed;z-index:2147483643;pointer-events:none;display:none;flex-direction:row;align-items:stretch}
+    .__lp-lbl-arrows{display:flex;background:#2a2a3a;border-radius:4px 0 0 4px;overflow:hidden;pointer-events:auto}
+    .__lp-lbl-arrows button{width:26px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+    .__lp-lbl-arrows button:hover{background:rgba(255,255,255,0.1)}
+    .__lp-lbl-arrows button:first-child{border-right:1px solid rgba(255,255,255,0.08)}
+    .__lp-lbl-text{background:#1e1b4b;color:#e0e7ff;font:600 11px/1.3 ui-monospace,monospace;padding:4px 10px;border-radius:0 4px 4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px;display:flex;align-items:center}
+    .__lp-bar{position:fixed;bottom:0;left:0;right:0;z-index:2147483645;background:#0c0c0f;color:#e0e7ff;font:500 13px/1.4 system-ui,-apple-system,sans-serif;display:flex;align-items:center;padding:10px 16px;gap:12px;box-shadow:0 -4px 24px rgba(0,0,0,0.4);pointer-events:auto;transition:transform .15s ease}
+    .__lp-bar.minimized{transform:translateY(100%)}
+    .__lp-bar kbd{background:rgba(255,255,255,0.1);border-radius:4px;padding:2px 6px;font:600 10px ui-monospace,monospace;color:rgba(224,231,255,0.6)}
+    .__lp-bar-hint{font-size:12px;color:rgba(224,231,255,0.4);white-space:nowrap}
+    .__lp-bar-path{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:12px ui-monospace,monospace;color:rgba(224,231,255,0.6)}
+    .__lp-btn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none;padding:0}
+    .__lp-btn-rec{background:#dc2626}
+    .__lp-btn-stop{background:#2a2a3a}
+    .__lp-btn-sm{width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none;padding:0}
+    .__lp-btn-sm:hover{background:rgba(255,255,255,0.12)}
+    .__lp-timer{font:600 14px ui-monospace,monospace;color:#f87171;min-width:44px}
+    .__lp-dot{width:6px;height:6px;border-radius:50%;background:#dc2626;flex-shrink:0;animation:__lp-blink 1s step-end infinite}
+    .__lp-clicks{font:400 11px system-ui,sans-serif;color:rgba(224,231,255,0.25);white-space:nowrap}
+    .__lp-toast{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);z-index:2147483646;background:#22c55e;color:#fff;font:600 13px/1.4 system-ui,sans-serif;padding:8px 20px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.25);opacity:0;transition:opacity .2s;pointer-events:none}
+    .__lp-toast.show{opacity:1}
+    .__lp-toast.err{background:#dc2626}
+    .__lp-settings{position:fixed;bottom:58px;right:16px;z-index:2147483646;width:300px;background:#0c0c0f;border:0.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;display:none;flex-direction:column;gap:12px;pointer-events:auto;box-shadow:0 -8px 32px rgba(0,0,0,0.4)}
+    .__lp-settings label{font:400 11px system-ui,sans-serif;color:rgba(224,231,255,0.35);display:block;margin-bottom:4px}
+    .__lp-settings input,.__lp-settings select{width:100%;background:#1a1a24;border:0.5px solid rgba(255,255,255,0.1);border-radius:6px;padding:8px 10px;color:#e0e7ff;font:13px ui-monospace,monospace;outline:none;box-sizing:border-box}
+    .__lp-settings select{font-family:system-ui,-apple-system,sans-serif;cursor:pointer}
+    .__lp-settings input:focus,.__lp-settings select:focus{border-color:rgba(99,102,241,0.5)}
+    .__lp-settings input::placeholder{color:rgba(224,231,255,0.2)}
+    .__lp-mini{position:fixed;bottom:12px;right:16px;z-index:2147483645;width:36px;height:36px;border-radius:8px;background:#0c0c0f;border:0.5px solid rgba(255,255,255,0.1);display:none;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+    .__lp-mini:hover{background:#1a1a24}
+    .__lp-spin{animation:__lp-spin .8s linear infinite}
+    @keyframes __lp-blink{50%{opacity:0}}
+    @keyframes __lp-spin{to{transform:rotate(360deg)}}
   `;
   document.head.appendChild(style);
 
   // ======================== DOM ========================
-  const tints = Array.from({length:4}, () => { const d = document.createElement("div"); d.className = "__ep-tint"; document.body.appendChild(d); return d; });
+  const tints = Array.from({length:4}, () => { const d = document.createElement("div"); d.className = "__lp-tint"; document.body.appendChild(d); return d; });
   const [tT,tB,tL,tR] = tints;
   function positionTint(r) {
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -55,33 +55,33 @@
     Object.assign(tR.style,{left:r.right+"px",top:r.top+"px",width:Math.max(0,vw-r.right)+"px",height:r.height+"px",display:"block"});
   }
 
-  const highlight = document.createElement("div"); highlight.className = "__ep-hl"; document.body.appendChild(highlight);
+  const highlight = document.createElement("div"); highlight.className = "__lp-hl"; document.body.appendChild(highlight);
 
   // Label with arrows
-  const lblWrap = document.createElement("div"); lblWrap.className = "__ep-lbl-wrap";
-  const lblArrows = document.createElement("div"); lblArrows.className = "__ep-lbl-arrows";
+  const lblWrap = document.createElement("div"); lblWrap.className = "__lp-lbl-wrap";
+  const lblArrows = document.createElement("div"); lblArrows.className = "__lp-lbl-arrows";
   const arrowUp = document.createElement("button");
   arrowUp.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="rgba(224,231,255,0.5)" stroke-width="1.5" stroke-linecap="round"><path d="M2 6.5L5 3.5L8 6.5"/></svg>`;
   const arrowDown = document.createElement("button");
   arrowDown.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="rgba(224,231,255,0.5)" stroke-width="1.5" stroke-linecap="round"><path d="M2 3.5L5 6.5L8 3.5"/></svg>`;
   lblArrows.append(arrowUp, arrowDown);
-  const lblText = document.createElement("div"); lblText.className = "__ep-lbl-text";
+  const lblText = document.createElement("div"); lblText.className = "__lp-lbl-text";
   lblWrap.append(lblArrows, lblText);
   document.body.appendChild(lblWrap);
 
-  const toast = document.createElement("div"); toast.className = "__ep-toast"; document.body.appendChild(toast);
+  const toast = document.createElement("div"); toast.className = "__lp-toast"; document.body.appendChild(toast);
   let toastTimer;
   function showToast(msg, isErr) {
-    toast.textContent = msg; toast.className = "__ep-toast show" + (isErr ? " err" : "");
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.className = "__ep-toast", 2000);
+    toast.textContent = msg; toast.className = "__lp-toast show" + (isErr ? " err" : "");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.className = "__lp-toast", 2000);
   }
 
   // Settings
-  const settingsPanel = document.createElement("div"); settingsPanel.className = "__ep-settings";
+  const settingsPanel = document.createElement("div"); settingsPanel.className = "__lp-settings";
   settingsPanel.innerHTML = `
     <div style="font:500 13px system-ui,sans-serif;color:rgba(224,231,255,0.7)">Settings</div>
-    <div><label>Deepgram API key</label><input type="password" id="__ep-key" placeholder="paste your key here"></div>
-    <div><label>Language</label><select id="__ep-lang">
+    <div><label>Deepgram API key</label><input type="password" id="__lp-key" placeholder="paste your key here"></div>
+    <div><label>Language</label><select id="__lp-lang">
       <option value="multi">🌍 Multilingual (auto)</option>
       <option value="uk">🇺🇦 Українська</option>
       <option value="en">🇬🇧 English</option>
@@ -90,39 +90,39 @@
   blockEvents(settingsPanel);
   document.body.appendChild(settingsPanel);
 
-  const keyInput = settingsPanel.querySelector("#__ep-key");
-  const langSelect = settingsPanel.querySelector("#__ep-lang");
-  keyInput.value = localStorage.getItem("ep_deepgram_key") || "";
-  langSelect.value = localStorage.getItem("ep_language") || "multi";
-  keyInput.addEventListener("change", () => { localStorage.setItem("ep_deepgram_key", keyInput.value.trim()); showToast("✓ Key saved"); });
-  langSelect.addEventListener("change", () => { localStorage.setItem("ep_language", langSelect.value); });
+  const keyInput = settingsPanel.querySelector("#__lp-key");
+  const langSelect = settingsPanel.querySelector("#__lp-lang");
+  keyInput.value = localStorage.getItem("lp_deepgram_key") || "";
+  langSelect.value = localStorage.getItem("lp_language") || "multi";
+  keyInput.addEventListener("change", () => { localStorage.setItem("lp_deepgram_key", keyInput.value.trim()); showToast("✓ Key saved"); });
+  langSelect.addEventListener("change", () => { localStorage.setItem("lp_language", langSelect.value); });
 
   // SVGs
   const GEAR_SVG = `<svg width="16" height="16" viewBox="0 0 16 16" fill="rgba(224,231,255,0.45)"><path d="M6.8 1.6l-.5 1.5a5 5 0 0 0-1.2.7L3.6 3.4l-1.2 2 1 1.2a5 5 0 0 0 0 1.4l-1 1.2 1.2 2 1.5-.4a5 5 0 0 0 1.2.7l.5 1.5h2.4l.5-1.5a5 5 0 0 0 1.2-.7l1.5.4 1.2-2-1-1.2a5 5 0 0 0 0-1.4l1-1.2-1.2-2-1.5.4a5 5 0 0 0-1.2-.7L9.2 1.6H6.8zM8 5.8a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4z" fill-rule="evenodd"/></svg>`;
-  const SPINNER_SVG = `<svg width="18" height="18" viewBox="0 0 18 18" class="__ep-spin"><circle cx="9" cy="9" r="7" fill="none" stroke="rgba(224,231,255,0.15)" stroke-width="2"/><path d="M9 2a7 7 0 0 1 7 7" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/></svg>`;
+  const SPINNER_SVG = `<svg width="18" height="18" viewBox="0 0 18 18" class="__lp-spin"><circle cx="9" cy="9" r="7" fill="none" stroke="rgba(224,231,255,0.15)" stroke-width="2"/><path d="M9 2a7 7 0 0 1 7 7" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/></svg>`;
   const X_SVG = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(224,231,255,0.45)" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l8 8M11 3l-8 8"/></svg>`;
   const MINIMIZE_SVG = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(224,231,255,0.45)" stroke-width="1.5" stroke-linecap="round"><path d="M3 7h8"/></svg>`;
   const EXPAND_SVG = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="rgba(224,231,255,0.55)" stroke-width="1.5" stroke-linecap="round"><path d="M4 6l4-3 4 3M4 10l4 3 4-3"/></svg>`;
 
   // Bar
-  const bar = document.createElement("div"); bar.className = "__ep-bar";
-  const recBtn = document.createElement("button"); recBtn.className = "__ep-btn __ep-btn-rec";
+  const bar = document.createElement("div"); bar.className = "__lp-bar";
+  const recBtn = document.createElement("button"); recBtn.className = "__lp-btn __lp-btn-rec";
   recBtn.innerHTML = `<div style="width:12px;height:12px;border-radius:50%;background:#fff"></div>`;
-  const timerEl = document.createElement("span"); timerEl.className = "__ep-timer"; timerEl.style.display = "none";
-  const dotEl = document.createElement("div"); dotEl.className = "__ep-dot"; dotEl.style.display = "none";
-  const clicksEl = document.createElement("span"); clicksEl.className = "__ep-clicks"; clicksEl.style.display = "none";
-  const hintEl = document.createElement("span"); hintEl.className = "__ep-bar-hint";
+  const timerEl = document.createElement("span"); timerEl.className = "__lp-timer"; timerEl.style.display = "none";
+  const dotEl = document.createElement("div"); dotEl.className = "__lp-dot"; dotEl.style.display = "none";
+  const clicksEl = document.createElement("span"); clicksEl.className = "__lp-clicks"; clicksEl.style.display = "none";
+  const hintEl = document.createElement("span"); hintEl.className = "__lp-bar-hint";
   hintEl.innerHTML = `<kbd>Click</kbd> copy &nbsp;<kbd>↑↓</kbd> layer &nbsp;<kbd>Esc</kbd> exit`;
-  const pathEl = document.createElement("span"); pathEl.className = "__ep-bar-path"; pathEl.textContent = "Hover over an element…";
-  const minimizeBtn = document.createElement("button"); minimizeBtn.className = "__ep-btn-sm"; minimizeBtn.innerHTML = MINIMIZE_SVG;
-  const gearBtn = document.createElement("button"); gearBtn.className = "__ep-btn-sm"; gearBtn.innerHTML = GEAR_SVG;
-  const exitBtn = document.createElement("button"); exitBtn.className = "__ep-btn-sm"; exitBtn.innerHTML = X_SVG;
+  const pathEl = document.createElement("span"); pathEl.className = "__lp-bar-path"; pathEl.textContent = "Hover over an element…";
+  const minimizeBtn = document.createElement("button"); minimizeBtn.className = "__lp-btn-sm"; minimizeBtn.innerHTML = MINIMIZE_SVG;
+  const gearBtn = document.createElement("button"); gearBtn.className = "__lp-btn-sm"; gearBtn.innerHTML = GEAR_SVG;
+  const exitBtn = document.createElement("button"); exitBtn.className = "__lp-btn-sm"; exitBtn.innerHTML = X_SVG;
   bar.append(recBtn, timerEl, dotEl, clicksEl, hintEl, pathEl, minimizeBtn, gearBtn, exitBtn);
   blockEvents(bar);
   document.body.appendChild(bar);
 
   // Mini expand pill (shown when bar is minimized)
-  const miniBtn = document.createElement("div"); miniBtn.className = "__ep-mini"; miniBtn.innerHTML = EXPAND_SVG;
+  const miniBtn = document.createElement("div"); miniBtn.className = "__lp-mini"; miniBtn.innerHTML = EXPAND_SVG;
   blockEvents(miniBtn);
   document.body.appendChild(miniBtn);
 
@@ -145,7 +145,7 @@
     const parts = []; let node = el;
     while (node && node !== document.body && parts.length < 5) {
       let seg = node.tagName.toLowerCase();
-      const id = node.id && !node.id.startsWith("__ep") ? node.id : null;
+      const id = node.id && !node.id.startsWith("__lp") ? node.id : null;
       const tid = node.getAttribute("data-testid");
       if (id) { seg += "#" + id; parts.unshift(seg); break; }
       if (tid) { seg += '[data-testid="' + tid + '"]'; parts.unshift(seg); break; }
@@ -189,7 +189,7 @@
   let settingsOpen = false, barMinimized = false;
   let mediaRecorder = null, audioChunks = [], clicks = [], recStartTime = 0, timerInterval = null;
 
-  function isOurs(el) { let n=el; while(n){if(typeof n.className==="string"&&n.className.includes("__ep"))return true;if(n.id?.startsWith("__ep"))return true;n=n.parentElement;}return false; }
+  function isOurs(el) { let n=el; while(n){if(typeof n.className==="string"&&n.className.includes("__lp"))return true;if(n.id?.startsWith("__lp"))return true;n=n.parentElement;}return false; }
   function formatTime(s) { return String(Math.floor(s/60)).padStart(2,"0")+":"+String(Math.floor(s%60)).padStart(2,"0"); }
   function updateTimer() { timerEl.textContent = formatTime((Date.now()-recStartTime)/1000); }
 
@@ -248,17 +248,17 @@
 
   // ======================== BAR STATES ========================
   function setBarPicking() {
-    recBtn.className="__ep-btn __ep-btn-rec"; recBtn.innerHTML=`<div style="width:12px;height:12px;border-radius:50%;background:#fff"></div>`;
+    recBtn.className="__lp-btn __lp-btn-rec"; recBtn.innerHTML=`<div style="width:12px;height:12px;border-radius:50%;background:#fff"></div>`;
     timerEl.style.display="none"; dotEl.style.display="none"; clicksEl.style.display="none";
     hintEl.innerHTML=`<kbd>Click</kbd> copy &nbsp;<kbd>↑↓</kbd> layer &nbsp;<kbd>Esc</kbd> exit`; hintEl.style.display="";
   }
   function setBarRecording() {
-    recBtn.className="__ep-btn __ep-btn-stop"; recBtn.innerHTML=`<div style="width:12px;height:12px;border-radius:2px;background:#fff"></div>`;
+    recBtn.className="__lp-btn __lp-btn-stop"; recBtn.innerHTML=`<div style="width:12px;height:12px;border-radius:2px;background:#fff"></div>`;
     timerEl.style.display=""; timerEl.textContent="00:00"; dotEl.style.display=""; clicksEl.style.display=""; clicksEl.textContent="0 clicks";
     hintEl.innerHTML=`<kbd>Click</kbd> log element &nbsp;<kbd>↑↓</kbd> layer`;
   }
   function setBarProcessing() {
-    recBtn.className="__ep-btn"; recBtn.style.background="rgba(255,255,255,0.06)"; recBtn.innerHTML=SPINNER_SVG;
+    recBtn.className="__lp-btn"; recBtn.style.background="rgba(255,255,255,0.06)"; recBtn.innerHTML=SPINNER_SVG;
     timerEl.style.display="none"; dotEl.style.display="none"; clicksEl.style.display="none";
     hintEl.textContent="Transcribing "+formatTime((Date.now()-recStartTime)/1000)+" · "+clicks.length+" clicks…";
   }
@@ -272,7 +272,7 @@
 
   // ======================== RECORDING ========================
   async function startRecording() {
-    const key = keyInput.value.trim()||localStorage.getItem("ep_deepgram_key");
+    const key = keyInput.value.trim()||localStorage.getItem("lp_deepgram_key");
     if (!key) { showToast("Set Deepgram API key in settings",true); toggleSettings(true); return; }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({audio:true});
@@ -298,8 +298,8 @@
   }
 
   async function transcribe(audioBlob) {
-    const key=keyInput.value.trim()||localStorage.getItem("ep_deepgram_key")||"";
-    const lang=langSelect.value||localStorage.getItem("ep_language")||"multi";
+    const key=keyInput.value.trim()||localStorage.getItem("lp_deepgram_key")||"";
+    const lang=langSelect.value||localStorage.getItem("lp_language")||"multi";
     try {
       const resp = await fetch("https://api.deepgram.com/v1/listen?"+new URLSearchParams({model:"nova-3",language:lang,smart_format:"true",punctuate:"true",utterances:"true",words:"true"}),{method:"POST",headers:{"Authorization":"Token "+key,"Content-Type":"audio/webm"},body:audioBlob});
       if(!resp.ok){showToast("Deepgram error: "+resp.status,true);return null;}
@@ -399,12 +399,12 @@
   // ======================== TEARDOWN ========================
   function teardown() {
     if(mediaRecorder){mediaRecorder.stream.getTracks().forEach(t=>t.stop());mediaRecorder=null;}
-    clearInterval(timerInterval); window.__elementPointerActive=false;window.__elementPointerTeardown=null;
+    clearInterval(timerInterval); window.__llmPointerActive=false;window.__llmPointerTeardown=null;
     document.removeEventListener("mousemove",onMove,true);
     document.removeEventListener("click",onClick,true);
     document.removeEventListener("mousedown",onMouseDown,true);
     document.removeEventListener("keydown",onKey,true);
     [...tints,highlight,lblWrap,toast,bar,settingsPanel,miniBtn,style].forEach(el=>el.remove());
   }
-  window.__elementPointerTeardown=teardown;
+  window.__llmPointerTeardown=teardown;
 })();
