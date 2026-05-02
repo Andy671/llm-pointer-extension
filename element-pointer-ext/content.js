@@ -184,7 +184,8 @@
   function fallbackCopy(text) { const ta=document.createElement("textarea");ta.value=text;ta.style.cssText="position:fixed;left:-9999px;";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");showToast("✅ Copied!");}catch{showToast("⚠ Copy failed",true);}ta.remove(); }
 
   // ======================== STATE ========================
-  let mode = "picking", selectedEl = null, hovered = null, lastPath = "";
+  let mode = "picking", selectedEl = null, hovered = null, pickedEl = null, lastPath = "";
+  let lastPageX = 0, lastPageY = 0;
   let settingsOpen = false, barMinimized = false;
   let mediaRecorder = null, audioChunks = [], clicks = [], recStartTime = 0, timerInterval = null;
 
@@ -222,14 +223,28 @@
   }
   function navigateDown() {
     if (!selectedEl) return;
-    const child = selectedEl.firstElementChild;
-    if (child && !isOurs(child)) {
-      updateSelection(child);
+    // Prefer descending toward whatever is under the cursor right now — re-evaluated live
+    // so we track real cursor position, not the snapshot from the last hover (which can
+    // drift after a fallback descent or a page mutation). Fall back to pickedEl if the
+    // cursor is currently over our UI.
+    const live = document.elementFromPoint(lastPageX, lastPageY);
+    const target = (live && !isOurs(live)) ? live : pickedEl;
+    if (target && target !== selectedEl && selectedEl.contains(target)) {
+      let n = target;
+      while (n && n.parentElement !== selectedEl) n = n.parentElement;
+      if (n && !isOurs(n)) { updateSelection(n); return; }
     }
+    // No cursor path available (cursor is past the leaf or unrelated) — pick the
+    // largest visible child as a sensible default.
+    let best = null, bestArea = 0;
+    for (const c of selectedEl.children) {
+      if (isOurs(c)) continue;
+      const r = c.getBoundingClientRect();
+      const a = r.width * r.height;
+      if (a > bestArea) { best = c; bestArea = a; }
+    }
+    if (best) { pickedEl = best; updateSelection(best); }
   }
-
-  arrowUp.addEventListener("click", e => { e.preventDefault(); navigateUp(); });
-  arrowDown.addEventListener("click", e => { e.preventDefault(); navigateDown(); });
 
   // ======================== BAR STATES ========================
   function setBarPicking() {
@@ -254,8 +269,6 @@
     bar.classList.toggle("minimized", barMinimized);
     miniBtn.style.display = barMinimized ? "flex" : "none";
   }
-  minimizeBtn.addEventListener("click", e => { e.preventDefault(); toggleMinimize(); });
-  miniBtn.addEventListener("click", e => { e.preventDefault(); toggleMinimize(); });
 
   // ======================== RECORDING ========================
   async function startRecording() {
@@ -314,15 +327,35 @@
   // ======================== EVENTS ========================
   function onMove(e) {
     const el = document.elementFromPoint(e.clientX, e.clientY);
-    if (!el || isOurs(el) || el === hovered) return;
+    if (!el || isOurs(el)) return;
+    lastPageX = e.clientX; lastPageY = e.clientY;
+    if (el === hovered) return;
     hovered = el;
+    pickedEl = el;
     updateSelection(el);
   }
 
   function onClick(e) {
-    // Block ALL our element clicks from reaching the page
+    // Our UI: dispatch button actions here. We must stop propagation at document capture
+    // to keep page modal/outside-click handlers from firing — but per-button listeners
+    // never get a chance to run after that, so delegate the dispatch in the same handler.
     if (isOurs(e.target)) {
-      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      const t = e.target;
+      let action = null;
+      if (recBtn.contains(t)) action = () => { if (mode==="picking") startRecording(); else if (mode==="recording") stopRecording(); };
+      else if (arrowUp.contains(t)) action = navigateUp;
+      else if (arrowDown.contains(t)) action = navigateDown;
+      else if (minimizeBtn.contains(t) || miniBtn.contains(t)) action = toggleMinimize;
+      else if (gearBtn.contains(t)) action = () => toggleSettings();
+      else if (exitBtn.contains(t)) action = teardown;
+      if (action) {
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+        action();
+      } else {
+        // Click on settings panel chrome / inputs — block bubble to page but let the
+        // browser run its default (focus the input, open the select dropdown).
+        e.stopPropagation(); e.stopImmediatePropagation();
+      }
       return;
     }
     e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
@@ -344,10 +377,6 @@
       e.stopPropagation(); e.stopImmediatePropagation();
     }
   }
-
-  recBtn.addEventListener("click", e => { e.preventDefault(); if(mode==="picking")startRecording();else if(mode==="recording")stopRecording(); });
-  gearBtn.addEventListener("click", e => { e.preventDefault(); toggleSettings(); });
-  exitBtn.addEventListener("click", e => { e.preventDefault(); teardown(); });
 
   function onKey(e) {
     if (e.key === "Escape") {
