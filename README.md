@@ -1,4 +1,4 @@
-# LLM Pointer
+# LLM Pointer (Chrome Extension)
 
 ![LLM Pointer demo](./demo.gif)
 
