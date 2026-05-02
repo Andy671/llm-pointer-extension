@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Element Pointer",
+  "version": "1.1.0",
+  "description": "Click any element → copy its path for LLM context",
+  "permissions": ["activeTab", "scripting", "clipboardWrite"],
+  "action": {
+    "default_icon": { "32": "icon32.png" },
+    "default_title": "Element Pointer"
+  },
+  "background": { "service_worker": "background.js" },
+  "icons": { "32": "icon32.png", "128": "icon128.png" }
+}

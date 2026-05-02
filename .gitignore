@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Node (in case anyone adds tooling later)
+node_modules/
+npm-debug.log*
+
+# Local secrets — Deepgram key lives in browser localStorage, not on disk,
+# but keep this here in case anyone adds an .env-based config later.
+.env
+.env.local
